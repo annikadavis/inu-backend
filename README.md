@@ -5,5 +5,6 @@
 
 ## How to start
 - Install dependencies with `npm install`
+- remove `.example` from `.env.example` and add your credentials.
 - create database with entering mysql console using `mysql -u root` and run the command `CREATE DATABASE inu_health`
 - start the application with `npm start`
