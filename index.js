@@ -135,8 +135,8 @@ async function startServer() {
         .status(400)
         .json({ error: "One of the required information is missing" });
       return;
-    } 
-   if (!validator.isEmail(email)) {
+    }
+    if (!validator.isEmail(email)) {
       res.status(400).json({ error: "Please Enter correct email address" });
       return;
     }
@@ -161,7 +161,7 @@ async function startServer() {
         VALUES('${email}', '${resetToken}')`);
 
         // STEP 4.C create a link for users to click on to reset their password.
-        const frontEndURL = "http://localhost:3000"; // I put localhost:3000 because thats the default address for a react app.
+        const frontEndURL = process.env.FRONT_END_URL // I put localhost:3000 because thats the default address for a react app.
         const resetLink = `${frontEndURL}/user/reset-password?token=${resetToken}`;
         //  This link should go to a front-end which has a form,
         // and it should send the reset token along with the new password to /user/reset-password as seen below on line 179.
