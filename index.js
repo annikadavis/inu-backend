@@ -103,9 +103,9 @@ async function startServer() {
     const foundUser = results[0];
     console.log(foundUser);
     if (foundUser) {
-      res
-        .status(409)
-        .json({ error: `User with email address: ${email} already exists` });
+      res.status(409).json({
+        error: `User with email address: ${email} already exists.We are redirecting you to login`,
+      });
       return;
     }
 
@@ -161,7 +161,7 @@ async function startServer() {
         VALUES('${email}', '${resetToken}')`);
 
         // STEP 4.C create a link for users to click on to reset their password.
-        const frontEndURL = process.env.FRONT_END_URL // I put localhost:3000 because thats the default address for a react app.
+        const frontEndURL = process.env.FRONT_END_URL; // I put localhost:3000 because thats the default address for a react app.
         const resetLink = `${frontEndURL}/user/reset-password?token=${resetToken}`;
         //  This link should go to a front-end which has a form,
         // and it should send the reset token along with the new password to /user/reset-password as seen below on line 179.
