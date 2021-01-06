@@ -190,7 +190,7 @@ async function startServer() {
     // because we don't want hackers to know which emails are available in our database
     res.status(200).json({
       message:
-        "We have sent an email with the forgot password link if we found a user with that email!",
+        "We have sent an email with the forgot password link if you are registered!",
     });
   });
 
