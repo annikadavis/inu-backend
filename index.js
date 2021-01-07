@@ -85,16 +85,21 @@ async function startServer() {
   });
 
   app.post("/user/create", async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, repeatPassword } = req.body;
     const validator = require("validator");
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !repeatPassword) {
       res
         .status(400)
         .json({ error: "One of the required information is missing" });
       return;
     } else if (!validator.isEmail(email)) {
       res.status(400).json({ error: "Please Enter correct email address" });
+      return;
+    } 
+    if (password != repeatPassword){
+      res.status(400).json({error:"Passwords dont match!"})
+      return;
     }
 
     const [results] = await db.execute(
@@ -275,6 +280,10 @@ async function startServer() {
       CONSTRAINT email_unique UNIQUE (email)
     );
   `);
+
+//   await db.execute(`
+//   DELETE FROM users;
+// `);
 
     // runs migrations down (undoes the change as specified in the migration)
     // THIS MEANS ALL DATA GETS DELETED EVERY TIME THE APP RESTARTS!!!!
