@@ -22,7 +22,7 @@ describe("test user routes", () => {
 
   it("POST /user/login logins user", async () => {
     const response = await request(app)
-      .post("/user/asdasdas")
+      .post("/user/login")
       .send({ email: user.email, password: user.password });
 
     expect(response.body).toEqual({

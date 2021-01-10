@@ -1,58 +1,61 @@
 const validator = require("validator");
 const db = require("../config/db");
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const { name, email, password, repeatPassword } = req.body;
   if (!name || !email || !password || !repeatPassword) {
-    res
-      .status(400)
-      .json({ error: "One of the required information is missing" });
+    const error = new Error("One of the required information is missing");
+    error.status = 400;
+    next(error);
     return;
   } else if (!validator.isEmail(email)) {
-    res.status(400).json({ error: "Please Enter correct email address" });
+    const error = new Error("Please Enter correct email address");
+    error.status = 400;
+    next(error);
     return;
   }
   if (password != repeatPassword) {
-    res.status(400).json({ error: "Passwords dont match!" });
+    const error = new Error("Passwords dont match!");
+    error.status = 400;
+    next(error);
     return;
   }
 
-  console.log(email);
   const [foundUser] = await db.$queryRaw(
     `select * from users where email= ?`,
     email
   );
-  console.log(foundUser);
+
   if (foundUser) {
-    res.status(409).json({
-      error: `User with email address: ${email} already exists. We are redirecting you to login`,
-    });
+    const error = new Error(
+      `User with email address: ${email} already exists. We are redirecting you to login`
+    );
+    error.status = 409;
+    next(error);
+
     return;
   }
 
   try {
     await db.$queryRaw(`
-      INSERT INTO users(
-        
-        
-      name, email, password) 
+      INSERT INTO users(name, email, password) 
       VALUES('${name}','${email}', '${password}')`);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
     return;
   }
 
   res.json({ message: "Created user" });
 };
 
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   // STEP 1, get email and password the user gives us from the body
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res
-      .status(400)
-      .json({ error: "One of the required information is missing" });
+    const error = new Error("One of the required information is missing");
+    error.status = 400;
+    next(error);
     return;
   }
 
@@ -65,10 +68,9 @@ const loginUser = async (req, res) => {
 
   // STEP 3, if user DOES NOT exist, send error
   if (!foundUser) {
-    res.status(401).json({
-      error:
-        "No such user with the provided email and password combination in database",
-    });
+    const error = new Error("No such user with the provided email and password combination in database",);
+    error.status = 401;
+    next(error);
     return;
   }
 

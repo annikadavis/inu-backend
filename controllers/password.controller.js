@@ -9,19 +9,21 @@ const db = require("../config/db");
 // it can only send 100 emails per day.
 mail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
   // STEP 1, get reset token and new password the user gives us from the body
   const { newPassword, resetToken, repeatPassword } = req.body;
 
   if (!resetToken || !newPassword || !repeatPassword) {
-    res
-      .status(400)
-      .json({ error: "One of the required information is missing" });
+    const error = new Error("One of the required information is missing");
+    error.status = 400;
+    next(error);
     return;
   }
 
   if (newPassword != repeatPassword) {
-    res.status(400).json({ error: "Passwords dont match" });
+    const error = new Error("Passwords dont match");
+    error.status = 400;
+    next(error);
     return;
   }
 
@@ -32,40 +34,46 @@ const resetPassword = async (req, res) => {
 
   // STEP 3, if password reset request DOES NOT exist, send error
   if (!foundPasswordReset) {
-    res.status(401).json({
-      error: "invalid password reset token",
-    });
+    const error = new Error("invalid password reset token");
+    error.status = 401;
+    next(error);
     return;
   }
 
   // if it didn't return above, it means it exists.
   // the reason is: there is a return in that if statement so it would never come here.
   // STEP 4, if password reset request exists, update found user
-  await db.$queryRaw(`UPDATE users
-    SET password='${newPassword}'
-    WHERE email='${foundPasswordReset.email}'`);
+  await db.$queryRaw(
+    `UPDATE users
+    SET password = ?
+    WHERE email = ?`,
+    newPassword,
+    foundPasswordReset.email
+  );
 
   // STEP 5, Clean up so they can reset their password again later.
   await db.$queryRaw(
     `DELETE FROM password_reset where email='${foundPasswordReset.email}'`
   );
 
-  return res.json({ message: "your password has been reset" });
+  res.json({ message: "your password has been reset" });
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
   // STEP 1. Get the email that needs the password reset.
   const { email } = req.body;
   const { name } = req.body;
   // STEP 2. required info check
   if (!email || !name) {
-    res
-      .status(400)
-      .json({ error: "One of the required information is missing" });
+    const error = new Error("One of the required information is missing");
+    error.status = 400;
+    next(error);
     return;
   }
   if (!validator.isEmail(email)) {
-    res.status(400).json({ error: "Please Enter correct email address" });
+    const error = new Error("Please Enter correct email address");
+    error.status = 400;
+    next(error);
     return;
   }
 
@@ -80,7 +88,7 @@ const forgotPassword = async (req, res) => {
     const resetToken = nanoid();
     try {
       // STEP 4.A - DELETE THE EXISTING REQUEST! So that we can send a new one.
-      await db.$queryRaw(`DELETE FROM password_reset where email=?`, [email]);
+      await db.$queryRaw(`DELETE FROM password_reset where email = ?`, email);
 
       // STEP 4.B insert token and related email into the new table to keep track.
       await db.$queryRaw(`
@@ -108,7 +116,7 @@ const forgotPassword = async (req, res) => {
       // STEP 4.E  send email using sendgrid.
       await mail.send(message);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
       return;
     }
   }

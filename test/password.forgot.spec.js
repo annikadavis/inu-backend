@@ -1,3 +1,4 @@
+const mail = require("@sendgrid/mail");
 jest.mock("@sendgrid/mail");
 
 const request = require("supertest");
@@ -7,7 +8,8 @@ const db = require("../config/db");
 describe("POST /user/forgot-password", () => {
   const user = {
     name: "customer",
-    email: "bill@gmail.com",
+    email: "angel.encisso@gmail.com",
+    resetToken: "",
   };
 
   beforeEach(async () => {
@@ -25,14 +27,14 @@ describe("POST /user/forgot-password", () => {
 
   it("sends email with token to user if user inputs correct info", async () => {
     const response = await request(app)
-      .post("/user/login")
-      .send({ email: user.email, password: user.password });
+      .post("/user/forgot-password")
+      .send({ name: user.name, email: user.email });
 
     expect(response.body).toEqual({
-      email: user.email,
-      name: user.name,
-      id: expect.any(Number),
-      created_date: expect.any(String),
+      message:
+        "We have sent an email with the forgot password link if you are registered!",
     });
+
+    expect(mail.send.mock.calls[0][0].to).toEqual(user.email);
   });
 });

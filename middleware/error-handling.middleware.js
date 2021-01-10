@@ -5,5 +5,5 @@ module.exports = (err, req, res, next) => {
     err.message = "Something went wrong";
   }
 
-  res.status(err.status).json({ message: err.message });
+  res.status(err.status).json({ error: err.message });
 };
