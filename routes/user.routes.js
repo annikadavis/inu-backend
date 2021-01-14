@@ -5,6 +5,6 @@ const userRouter = Router();
 
 userRouter.post("/login", loginUser);
 
-userRouter.post("/auth/create", createUser);
+userRouter.post("/create", createUser);
 
 module.exports = userRouter;
