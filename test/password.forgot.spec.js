@@ -5,7 +5,7 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../config/db");
 
-describe("POST /user/forgot-password", () => {
+describe("POST /forgot-password", () => {
   const user = {
     name: "customer",
     email: "angel.encisso@gmail.com",
@@ -27,7 +27,7 @@ describe("POST /user/forgot-password", () => {
 
   it("sends email with token to user if user inputs correct info", async () => {
     const response = await request(app)
-      .post("/user/forgot-password")
+      .post("/forgot-password")
       .send({ name: user.name, email: user.email });
 
     expect(response.body).toEqual({

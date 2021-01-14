@@ -4,7 +4,7 @@ const request = require("supertest");
 const app = require("../app");
 const db = require("../config/db");
 
-describe("POST /user/reset-password", () => {
+describe("POST /reset-password", () => {
   const user = {
     name: "customer",
     email: "bill@gmail.com",
@@ -29,7 +29,7 @@ describe("POST /user/reset-password", () => {
   });
 
   it("sends email with token to user if user inputs correct info", async () => {
-    const response = await request(app).post("/user/reset-password").send({
+    const response = await request(app).post("/reset-password").send({
       resetToken: user.resetToken,
       newPassword: 12345,
       repeatPassword: 12345,

@@ -4,8 +4,8 @@ const passwordRouter = Router();
 
 
 
-passwordRouter.post("/user/forgot-password", forgotPassword);
+passwordRouter.post("/forgot-password", forgotPassword);
 
-passwordRouter.post("/user/reset-password", resetPassword);
+passwordRouter.post("/reset-password", resetPassword);
 
 module.exports = passwordRouter;

@@ -97,9 +97,9 @@ const forgotPassword = async (req, res, next) => {
 
       // STEP 4.C create a link for users to click on to reset their password.
       const frontEndURL = process.env.FRONT_END_URL; // I put localhost:3000 because thats the default address for a react app.
-      const resetLink = `${frontEndURL}/user/reset-password?token=${resetToken}`;
+      const resetLink = `${frontEndURL}/reset-password?token=${resetToken}`;
       //  This link should go to a front-end which has a form,
-      // and it should send the reset token along with the new password to /user/reset-password as seen below on line 179.
+      // and it should send the reset token along with the new password to /reset-password as seen below on line 179.
       //
       // NOTE: when you are on browser (front-end) you can get the query param using this:
       // const urlParams = new URLSearchParams(window.location.search);

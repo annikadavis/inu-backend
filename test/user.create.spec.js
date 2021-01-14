@@ -9,7 +9,7 @@ describe("test user routes", () => {
   afterEach(async () => {
     await db.$disconnect();
   });
-  it("POST /user/create creates new user", async () => {
+  it("POST /auth/create creates new user", async () => {
     const newUser = {
       name: "Something",
       email: "new@email.com",
@@ -17,18 +17,18 @@ describe("test user routes", () => {
       repeatPassword: "12345",
     };
 
-    const response = await request(app).post("/user/create").send(newUser);
+    const response = await request(app).post("/auth/create").send(newUser);
 
     expect(response.body).toEqual({ message: "Created user" });
   });
 
-  it("POST /user/create sends error message if info missing", async () => {
+  it("POST /auth/create sends error message if info missing", async () => {
     const newUser = {
       email: "new@email.com",
       password: "12345",
     };
 
-    const response = await request(app).post("/user/create").send(newUser);
+    const response = await request(app).post("/auth/create").send(newUser);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",

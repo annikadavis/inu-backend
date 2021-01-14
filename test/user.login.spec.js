@@ -20,9 +20,9 @@ describe("test user routes", () => {
     await db.$disconnect();
   });
 
-  it("POST /user/login logins user", async () => {
+  it("POST /login logins user", async () => {
     const response = await request(app)
-      .post("/user/login")
+      .post("/login")
       .send({ email: user.email, password: user.password });
 
     expect(response.body).toEqual({
@@ -33,13 +33,13 @@ describe("test user routes", () => {
     });
   });
 
-  it("POST /user/login sends error message if info missing", async () => {
+  it("POST /login sends error message if info missing", async () => {
     const userLogin = {
       name: "soul",
       password: "",
     };
 
-    const response = await request(app).post("/user/login").send(userLogin);
+    const response = await request(app).post("/login").send(userLogin);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",
