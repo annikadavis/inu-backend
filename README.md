@@ -30,6 +30,18 @@
 | POST   | /api/dailysuggestions/:phaseid               | Add a new suggestion              | none           | none                    | none         | New suggestion is added| 200             |
 | DELETE | /api/dailysuggestions/:phaseid/:suggestionid | Delete a suggestion               | none           | none                    | none         | Suggestion is deleted  | 204            |
 
+### Phases endpoints
+
+| Method | Endpoint                                     | Description                       | Path Parameter | Request Query Parameter | Request Body | Response Body     | Response Status |
+| ------ | -------------------------------------------- | --------------------------------- | -------------- | ----------------------- | ------------ | ----------------- | --------------- |
+| GET    | /api/phase               | Returns all phases | none       | none                    | none         | all phases| 200             |
+| GET    | /api/phase/:phaseid              | Returns one phase and suggestions connected to it | phase id       | none                    | none         | phase id and suggestions| 200             |
+| PUT    | /api/phase/:phaseid               | Update a phase              | phase id         | none                    | none         | Updated phase is now saved in DB        | 200             |
+| POST   | /api/phase             | Add new phase              | none           | none                    | none         | New phase is added| 200             |
+| DELETE | /api/phase/:phaseid | Delete a phase           | phase id        | none                    | none         | Phase is deleted  | 204            |
+
+
+
 ### Therapy Sessions endpoints
 
 | Method | Endpoint         | Description                        | Path Parameter | Request Query Parameter | Request Body    | Response Body          | Response Status |

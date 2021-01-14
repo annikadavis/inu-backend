@@ -2,16 +2,17 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const app = express();
 
-const userRouter = require("./routes/user.routes");
-const passwordRouter = require("./routes/password.routes");
+const PORT = process.env.PORT || 8000;
+const mainRouter = require("./routes/");
 const errorHandling = require("./middleware/error-handling.middleware");
 
-const app = express();
 // Automatically parses the body and makes it into a javascript object, if JSON.
 app.use(express.json());
 
-app.use(cors());
+app.use("/api", mainRouter);
+aapp.use(cors());
 
 // welcome message
 app.get("/", (req, res) => {
@@ -27,6 +28,9 @@ app.use("*", (req, res, next) => {
   next(error);
 });
 
+app.listen(PORT, () => {
+  console.log(`serving on http://localhost:${PORT}`);
+});
 app.use(errorHandling);
 
 module.exports = app;
