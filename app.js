@@ -4,7 +4,7 @@ const express = require("express");
 const cors = require("cors");
 
 const userRouter = require("./routes/user.routes");
-const passwordRouter = require("./routes/password.routes");
+const passwordRouter = require("./routes/auth.routes");
 const errorHandling = require("./middleware/error-handling.middleware");
 
 const app = express();
