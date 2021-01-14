@@ -42,21 +42,20 @@ model Quarter {
 }
 
 model Therapy {
-  id          Int           @id @default(autoincrement())
-  quarter_id  Int
+  id          Int                 @id @default(autoincrement())
   order_num   Int
   title       String
   sub_title   String
   icon        String
   audio       String
-  createdAt   DateTime      @default(now())
+  createdAt   DateTime            @default(now())
   updatedAt   DateTime
-  quarter     Quarter?      @relation(fields: [quarterId], references: [id])
+  quarter     Quarter?            @relation(fields: [quarterId], references: [id])
   quarterId   Int?
-  description Description[]
+  description Description_audio[]
 }
 
-model Description {
+model Description_audio {
   id        Int      @id @default(autoincrement())
   text      String
   therapy   Therapy? @relation(fields: [therapyId], references: [id])
@@ -65,7 +64,6 @@ model Description {
 
 model Suggestion {
   id        Int      @id @default(autoincrement())
-  phase_id  Int
   text      String
   createdAt DateTime @default(now())
   updatedAt DateTime
