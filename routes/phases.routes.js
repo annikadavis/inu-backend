@@ -1,14 +1,20 @@
-const router = require("express").Router;
+const router = require("express").Router()
 const {
-  addPhase,
-  deletePhase,
-  getOnePhase,
+  // addPhase,
+  // deletePhase,
+  // getOnePhase,
   getAllPhase,
   updatePhase,
+  // updatePhase,
+  createPhase
 } = require("../controllers/phases.controller");
 
-router.post("/");
-router.put("/:phaseid", updatePhase);
+router.post("/", createPhase );
+// router.put("/:phaseid", updatePhase);
 router.get("/", getAllPhase);
-router.get("/:phaseid", getOnePhase);
-router.delete("/:phaseid", deletePhase);
+// router.get("/:phaseid", getOnePhase);
+// router.delete("/:phaseid", deletePhase);
+
+
+
+module.exports = router

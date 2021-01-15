@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -12,15 +13,15 @@ const errorHandling = require("./middleware/error-handling.middleware");
 app.use(express.json());
 
 app.use("/api", mainRouter);
-aapp.use(cors());
+app.use(cors());
 
 // welcome message
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Inu Health API" });
 });
 
-app.use(userRouter);
-app.use(passwordRouter);
+// app.use(userRouter);
+// app.use(passwordRouter);
 
 app.use("*", (req, res, next) => {
   const error = new Error("Not found");
