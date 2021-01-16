@@ -9,7 +9,8 @@ describe("test user routes", () => {
   afterEach(async () => {
     await db.$disconnect();
   });
-  it("POST /create creates new user", async () => {
+
+  it("POST /user/create creates new user", async () => {
     const newUser = {
       name: "Something",
       email: "new@email.com",

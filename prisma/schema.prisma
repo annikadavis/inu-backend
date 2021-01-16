@@ -6,21 +6,90 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
+model Users {
   id           Int      @id @default(autoincrement())
   name         String
   email        String
   password     String
   created_date DateTime @default(now())
   updated_date DateTime @default(now()) @updatedAt
+
   // make email unique
+  cycle   Cycle? @relation(fields: [cycleId], references: [id])
+  cycleId Int?
 }
 
-model password_reset {
+model Password_reset {
   id          Int    @id @default(autoincrement())
   email       String
   reset_token String
 }
+
+model Cycle {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  cycle_length  Int
+  period_length Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+  user          Users[]
+}
+
+model Quarter {
+  id      Int       @id @default(autoincrement())
+  title   String
+  therapy Therapy[]
+}
+
+model Therapy {
+  id          Int                 @id @default(autoincrement())
+  order_num   Int
+  title       String
+  sub_title   String
+  icon        String
+  audio       String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime
+  quarter     Quarter?            @relation(fields: [quarterId], references: [id])
+  quarterId   Int?
+  description Description_audio[]
+}
+
+model Description_audio {
+  id        Int      @id @default(autoincrement())
+  text      String
+  therapy   Therapy? @relation(fields: [therapyId], references: [id])
+  therapyId Int?
+}
+
+model Suggestion {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  Phases    Phases?  @relation(fields: [phasesId], references: [id])
+  phasesId  Int?
+}
+
+model Phases {
+  id         Int          @id @default(autoincrement())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime
+  suggestion Suggestion[]
+}
+
+// model User {
+//   id         Int      @id @default(autoincrement())
+//   email      String
+//   name       String
+//   password   String
+//   birth_date DateTime
+//   createdAt  DateTime @default(now())
+//   updatedAt  DateTime
+//   cycle      Cycle    @relation(fields: [cycleId], references: [id])
+//   cycleId    Int
+//}
 
 generator client {
   provider = "prisma-client-js"

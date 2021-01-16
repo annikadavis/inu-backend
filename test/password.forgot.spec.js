@@ -14,8 +14,7 @@ describe("POST /forgot-password", () => {
 
   beforeEach(async () => {
     await db.$queryRaw(`
-    INSERT INTO users(
-      name, email, password) 
+    INSERT INTO users(name, email, password) 
     VALUES('${user.name}','${user.email}', '${user.password}')`);
   });
 
