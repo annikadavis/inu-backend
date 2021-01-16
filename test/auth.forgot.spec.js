@@ -10,17 +10,23 @@ describe("POST /auth/forgot-password", () => {
     name: "customer",
     email: "example@gmail.com",
     resetToken: "",
+    password: "some password",
   };
 
   beforeEach(async () => {
-    await db.$queryRaw(`
-    INSERT INTO users(name, email, password) 
-    VALUES('${user.name}','${user.email}', '${user.password}')`);
+    await db.users.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      },
+    });
   });
 
   afterEach(async () => {
-    await db.$queryRaw(`DELETE from users`);
-    await db.$queryRaw(`DELETE from password_reset`);
+    await db.users.deleteMany();
+    await db.password_reset.deleteMany();
+
     await db.$disconnect();
   });
 

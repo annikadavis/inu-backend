@@ -1,4 +1,4 @@
-const { nanoid } = require("nanoid"); // generates random unique strings
+ const { nanoid } = require("nanoid"); // generates random unique strings
 const validator = require("validator");
 
 const mail = require("@sendgrid/mail");
@@ -28,9 +28,9 @@ const resetPassword = async (req, res, next) => {
   }
 
   // STEP 2, get the password reset request from db
-  const [foundPasswordReset] = await db.$queryRaw(`
-    SELECT * FROM password_reset 
-    WHERE reset_token='${resetToken}'`);
+  const foundPasswordReset = await db.password_reset.findUnique({
+    where: { reset_token: resetToken },
+  });
 
   // STEP 3, if password reset request DOES NOT exist, send error
   if (!foundPasswordReset) {
@@ -43,18 +43,17 @@ const resetPassword = async (req, res, next) => {
   // if it didn't return above, it means it exists.
   // the reason is: there is a return in that if statement so it would never come here.
   // STEP 4, if password reset request exists, update found user
-  await db.$queryRaw(
-    `UPDATE users
-    SET password = ?
-    WHERE email = ?`,
-    newPassword,
-    foundPasswordReset.email
-  );
+  await db.users.update({
+    where: { email: foundPasswordReset.email },
+    data: {
+      password: newPassword,
+    },
+  });
 
   // STEP 5, Clean up so they can reset their password again later.
-  await db.$queryRaw(
-    `DELETE FROM password_reset where email='${foundPasswordReset.email}'`
-  );
+  await db.password_reset.delete({
+    where: { email: foundPasswordReset.email },
+  });
 
   res.json({ message: "your password has been reset" });
 };
@@ -78,9 +77,11 @@ const forgotPassword = async (req, res, next) => {
   }
 
   // STEP 3. Check if email exists in db.
-  const [foundUser] = await db.$queryRaw(
-    `select * from users where email='${email}'`
-  );
+  const foundUser = await db.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
 
   // STEP 4. if email exists in db, send a password reset link.
   if (foundUser) {
@@ -88,22 +89,19 @@ const forgotPassword = async (req, res, next) => {
     const resetToken = nanoid();
     try {
       // STEP 4.A - DELETE THE EXISTING REQUEST! So that we can send a new one.
-      await db.$queryRaw(`DELETE FROM password_reset where email = ?`, email);
+      await db.users.delete({ where: { email: email } });
 
       // STEP 4.B insert token and related email into the new table to keep track.
-      await db.$queryRaw(`
-        INSERT INTO password_reset(email, reset_token) 
-        VALUES('${email}', '${resetToken}')`);
+      await db.password_reset.create({
+        data: {
+          email: email,
+          reset_token: resetToken,
+        },
+      });
 
       // STEP 4.C create a link for users to click on to reset their password.
-      const frontEndURL = process.env.FRONT_END_URL; // I put localhost:3000 because thats the default address for a react app.
+      const frontEndURL = process.env.FRONT_END_URL;
       const resetLink = `${frontEndURL}/reset-password?token=${resetToken}`;
-      //  This link should go to a front-end which has a form,
-      // and it should send the reset token along with the new password to /reset-password as seen below on line 179.
-      //
-      // NOTE: when you are on browser (front-end) you can get the query param using this:
-      // const urlParams = new URLSearchParams(window.location.search);
-      // const resetToken = urlParams.get('token');
 
       // STEP 4.D prepare email
       const message = {
@@ -141,15 +139,24 @@ const loginUser = async (req, res, next) => {
   }
 
   // STEP 2, get a user with that combinations from database
-  // Write fields one by one so that we don't send back the password
-  // or any other unneeded information
-  const [foundUser] = await db.$queryRaw(`
-    SELECT id, name, email, created_date FROM users 
-    WHERE email='${email}' AND password='${password}'`); // this is equal to doing:
+  const foundUser = await db.users.findFirst({
+    where: {
+      email: email,
+      password: password,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      created_date: true,
+    },
+  });
 
   // STEP 3, if user DOES NOT exist, send error
   if (!foundUser) {
-    const error = new Error("No such user with the provided email and password combination in database",);
+    const error = new Error(
+      "No such user with the provided email and password combination in database"
+    );
     error.status = 401;
     next(error);
     return;
@@ -158,6 +165,5 @@ const loginUser = async (req, res, next) => {
   // STEP 4, if user exists, send found user
   return res.json(foundUser);
 };
-
 
 module.exports = { resetPassword, forgotPassword, loginUser };

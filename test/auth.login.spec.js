@@ -10,14 +10,17 @@ describe("POST /auth/login", () => {
   };
 
   beforeEach(async () => {
-    await db.$queryRaw(`
-    INSERT INTO users(
-      name, email, password) 
-    VALUES('${user.name}','${user.email}', '${user.password}')`);
+    await db.users.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      },
+    });
   });
 
   afterEach(async () => {
-    await db.$queryRaw(`DELETE from users`);
+    await db.users.deleteMany();
     await db.$disconnect();
   });
 
@@ -40,9 +43,7 @@ describe("POST /auth/login", () => {
       password: "",
     };
 
-    const response = await request(app)
-    .post("/api/auth/login")
-    .send(userLogin);
+    const response = await request(app).post("/api/auth/login").send(userLogin);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",

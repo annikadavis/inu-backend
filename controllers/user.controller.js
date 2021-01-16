@@ -21,10 +21,8 @@ const createUser = async (req, res, next) => {
     return;
   }
 
-  const [foundUser] = await db.$queryRaw(
-    `select * from users where email= ?`,
-    email
-  );
+  const foundUser = await db.users.findUnique({ where: { email } });
+  console.log("this is found user: ", foundUser);
 
   if (foundUser) {
     const error = new Error(
@@ -37,9 +35,13 @@ const createUser = async (req, res, next) => {
   }
 
   try {
-    await db.$queryRaw(`
-      INSERT INTO users(name, email, password) 
-      VALUES('${name}','${email}', '${password}')`);
+    await db.users.create({
+      data: {
+        name,
+        email,
+        password,
+      },
+    });
   } catch (error) {
     next(error);
     return;
@@ -48,34 +50,4 @@ const createUser = async (req, res, next) => {
   res.json({ message: "Created user" });
 };
 
-const loginUser = async (req, res, next) => {
-  // STEP 1, get email and password the user gives us from the body
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    const error = new Error("One of the required information is missing");
-    error.status = 400;
-    next(error);
-    return;
-  }
-
-  // STEP 2, get a user with that combinations from database
-  // Write fields one by one so that we don't send back the password
-  // or any other unneeded information
-  const [foundUser] = await db.$queryRaw(`
-    SELECT id, name, email, created_date FROM users 
-    WHERE email='${email}' AND password='${password}'`); // this is equal to doing:
-
-  // STEP 3, if user DOES NOT exist, send error
-  if (!foundUser) {
-    const error = new Error("No such user with the provided email and password combination in database",);
-    error.status = 401;
-    next(error);
-    return;
-  }
-
-  // STEP 4, if user exists, send found user
-  return res.json(foundUser);
-};
-
-module.exports = { createUser, loginUser };
+module.exports = { createUser };

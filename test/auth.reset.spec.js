@@ -9,34 +9,41 @@ describe("POST /auth/reset-password", () => {
     name: "customer",
     email: "bill@gmail.com",
     resetToken: "abcdf",
+    password: "some password",
   };
 
   beforeEach(async () => {
-    await db.$queryRaw(`
-    INSERT INTO users(
-      name, email, password) 
-    VALUES('${user.name}','${user.email}', '${user.password}')`);
+    await db.users.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      },
+    });
 
-    await db.$queryRaw(`
-    INSERT INTO password_reset(email, reset_token) 
-    VALUES('${user.email}','${user.resetToken}')`);
+    await db.password_reset.create({
+      data: {
+        email: user.email,
+        reset_token: user.resetToken,
+      },
+    });
   });
 
   afterEach(async () => {
-    await db.$queryRaw(`DELETE from users`);
-    await db.$queryRaw(`DELETE from password_reset`);
+    await db.users.deleteMany();
+    await db.password_reset.deleteMany();
     await db.$disconnect();
   });
 
   it("sends email with token to user if user inputs correct info", async () => {
     const response = await request(app).post("/api/auth/reset-password").send({
       resetToken: user.resetToken,
-      newPassword: 12345,
-      repeatPassword: 12345,
+      newPassword: "12345",
+      repeatPassword: "12345",
     });
 
     expect(response.body).toEqual({
-      message: "your password has been reset"
+      message: "your password has been reset",
     });
   });
 });

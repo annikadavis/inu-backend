@@ -3,7 +3,7 @@ const app = require("../app");
 const db = require("../config/db");
 describe("test user routes", () => {
   beforeEach(async () => {
-    await db.$executeRaw(`DELETE FROM users;`);
+    await db.users.deleteMany();
   });
 
   afterEach(async () => {
