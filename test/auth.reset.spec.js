@@ -1,21 +1,25 @@
-const mail = require("@sendgrid/mail");
 jest.mock("@sendgrid/mail");
 
 const request = require("supertest");
 const app = require("../app");
 const db = require("../config/db");
 
-describe("POST /forgot-password", () => {
+describe("POST /auth/reset-password", () => {
   const user = {
     name: "customer",
-    email: "angel.encisso@gmail.com",
-    resetToken: "",
+    email: "bill@gmail.com",
+    resetToken: "abcdf",
   };
 
   beforeEach(async () => {
     await db.$queryRaw(`
-    INSERT INTO users(name, email, password) 
+    INSERT INTO users(
+      name, email, password) 
     VALUES('${user.name}','${user.email}', '${user.password}')`);
+
+    await db.$queryRaw(`
+    INSERT INTO password_reset(email, reset_token) 
+    VALUES('${user.email}','${user.resetToken}')`);
   });
 
   afterEach(async () => {
@@ -25,15 +29,14 @@ describe("POST /forgot-password", () => {
   });
 
   it("sends email with token to user if user inputs correct info", async () => {
-    const response = await request(app)
-      .post("/forgot-password")
-      .send({ name: user.name, email: user.email });
-
-    expect(response.body).toEqual({
-      message:
-        "We have sent an email with the forgot password link if you are registered!",
+    const response = await request(app).post("/api/auth/reset-password").send({
+      resetToken: user.resetToken,
+      newPassword: 12345,
+      repeatPassword: 12345,
     });
 
-    expect(mail.send.mock.calls[0][0].to).toEqual(user.email);
+    expect(response.body).toEqual({
+      message: "your password has been reset"
+    });
   });
 });

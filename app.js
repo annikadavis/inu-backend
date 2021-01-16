@@ -1,11 +1,8 @@
 require("dotenv").config();
 
-
 const express = require("express");
 const cors = require("cors");
 const app = express();
-
-const PORT = process.env.PORT || 8000;
 
 const mainRouter = require("./routes/");
 
@@ -15,6 +12,7 @@ const errorHandling = require("./middleware/error-handling.middleware");
 app.use(express.json());
 
 app.use("/api", mainRouter);
+
 app.use(cors());
 
 // welcome message
@@ -31,9 +29,6 @@ app.use("*", (req, res, next) => {
   next(error);
 });
 
-app.listen(PORT, () => {
-  console.log(`serving on http://localhost:${PORT}`);
-});
 app.use(errorHandling);
 
 module.exports = app;

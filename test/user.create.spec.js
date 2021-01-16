@@ -18,7 +18,7 @@ describe("test user routes", () => {
       repeatPassword: "12345",
     };
 
-    const response = await request(app).post("/create").send(newUser);
+    const response = await request(app).post("/api/user/create").send(newUser);
 
     expect(response.body).toEqual({ message: "Created user" });
   });
@@ -29,7 +29,7 @@ describe("test user routes", () => {
       password: "12345",
     };
 
-    const response = await request(app).post("/create").send(newUser);
+    const response = await request(app).post("/api/user/create").send(newUser);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",

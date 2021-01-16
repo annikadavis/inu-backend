@@ -1,7 +1,8 @@
 const request = require("supertest");
 const app = require("../app");
 const db = require("../config/db");
-describe("test user routes", () => {
+
+describe("POST /auth/login", () => {
   const user = {
     name: "customer",
     email: "bill@gmail.com",
@@ -22,7 +23,7 @@ describe("test user routes", () => {
 
   it("POST /login logins user", async () => {
     const response = await request(app)
-      .post("/login")
+      .post("/api/auth/login")
       .send({ email: user.email, password: user.password });
 
     expect(response.body).toEqual({
@@ -39,7 +40,9 @@ describe("test user routes", () => {
       password: "",
     };
 
-    const response = await request(app).post("/login").send(userLogin);
+    const response = await request(app)
+    .post("/api/auth/login")
+    .send(userLogin);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",
