@@ -26,8 +26,9 @@ CREATE TABLE `Cycle` (
     `user_id` INT NOT NULL,
     `cycle_length` INT NOT NULL,
     `period_length` INT NOT NULL,
+    `last_period` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -43,20 +44,20 @@ CREATE TABLE `Quarter` (
 -- CreateTable
 CREATE TABLE `Therapy` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `quarter_id` INT NOT NULL,
+    `order_num` INT NOT NULL,
     `title` VARCHAR(191) NOT NULL,
     `sub_title` VARCHAR(191) NOT NULL,
     `icon` VARCHAR(191) NOT NULL,
     `audio` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `quarterId` INT,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Description` (
+CREATE TABLE `Description_audio` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `text` VARCHAR(191) NOT NULL,
     `therapyId` INT,
@@ -65,13 +66,12 @@ CREATE TABLE `Description` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Suggestion` (
+CREATE TABLE `Suggestions` (
     `id` INT NOT NULL AUTO_INCREMENT,
-    `phase_id` INT NOT NULL,
-    `text` VARCHAR(191) NOT NULL,
+    `text` VARCHAR(500) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-    `phasesId` INT,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `phaseId` INT,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -80,8 +80,9 @@ CREATE TABLE `Suggestion` (
 CREATE TABLE `Phases` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `text` VARCHAR(191),
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -93,7 +94,7 @@ ALTER TABLE `Users` ADD FOREIGN KEY (`cycleId`) REFERENCES `Cycle`(`id`) ON DELE
 ALTER TABLE `Therapy` ADD FOREIGN KEY (`quarterId`) REFERENCES `Quarter`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Description` ADD FOREIGN KEY (`therapyId`) REFERENCES `Therapy`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Description_audio` ADD FOREIGN KEY (`therapyId`) REFERENCES `Therapy`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Suggestion` ADD FOREIGN KEY (`phasesId`) REFERENCES `Phases`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Suggestions` ADD FOREIGN KEY (`phaseId`) REFERENCES `Phases`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

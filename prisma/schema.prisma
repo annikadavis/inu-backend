@@ -30,8 +30,9 @@ model Cycle {
   user_id       Int
   cycle_length  Int
   period_length Int
+  last_period   DateTime
   createdAt     DateTime @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @default(now()) @updatedAt
   user          Users[]
 }
 
@@ -49,7 +50,7 @@ model Therapy {
   icon        String
   audio       String
   createdAt   DateTime            @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime            @default(now()) @updatedAt
   quarter     Quarter?            @relation(fields: [quarterId], references: [id])
   quarterId   Int?
   description Description_audio[]
@@ -62,21 +63,22 @@ model Description_audio {
   therapyId Int?
 }
 
-model Suggestion {
+model Suggestions {
   id        Int      @id @default(autoincrement())
   text      String
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  Phases    Phases?  @relation(fields: [phasesId], references: [id])
-  phasesId  Int?
+  updatedAt DateTime @default(now()) @updatedAt
+  phase     Phases?  @relation(fields: [phaseId], references: [id])
+  phaseId   Int?
 }
 
 model Phases {
-  id         Int          @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   name       String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime
-  suggestion Suggestion[]
+  text       String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @default(now()) @updatedAt
+  suggestion Suggestions[]
 }
 
 // model User {
@@ -93,4 +95,5 @@ model Phases {
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["nativeTypes"]
 }
