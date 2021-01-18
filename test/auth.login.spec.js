@@ -1,7 +1,8 @@
 const request = require("supertest");
 const app = require("../app");
 const db = require("../config/db");
-describe("test user routes", () => {
+
+describe("POST /auth/login", () => {
   const user = {
     name: "customer",
     email: "bill@gmail.com",
@@ -9,20 +10,23 @@ describe("test user routes", () => {
   };
 
   beforeEach(async () => {
-    await db.$queryRaw(`
-    INSERT INTO users(
-      name, email, password) 
-    VALUES('${user.name}','${user.email}', '${user.password}')`);
+    await db.users.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        password: user.password,
+      },
+    });
   });
 
   afterEach(async () => {
-    await db.$queryRaw(`DELETE from users`);
+    await db.users.deleteMany();
     await db.$disconnect();
   });
 
-  it("POST /user/login logins user", async () => {
+  it("POST /login logins user", async () => {
     const response = await request(app)
-      .post("/user/login")
+      .post("/api/auth/login")
       .send({ email: user.email, password: user.password });
 
     expect(response.body).toEqual({
@@ -33,13 +37,13 @@ describe("test user routes", () => {
     });
   });
 
-  it("POST /user/login sends error message if info missing", async () => {
+  it("POST /login sends error message if info missing", async () => {
     const userLogin = {
       name: "soul",
       password: "",
     };
 
-    const response = await request(app).post("/user/login").send(userLogin);
+    const response = await request(app).post("/api/auth/login").send(userLogin);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",
