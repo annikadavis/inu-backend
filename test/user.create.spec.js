@@ -3,7 +3,7 @@ const app = require("../app");
 const db = require("../config/db");
 describe("test user routes", () => {
   beforeEach(async () => {
-    await db.$executeRaw(`DELETE FROM users;`);
+    await db.users.deleteMany();
   });
 
   afterEach(async () => {
@@ -18,18 +18,18 @@ describe("test user routes", () => {
       repeatPassword: "12345",
     };
 
-    const response = await request(app).post("/user/create").send(newUser);
+    const response = await request(app).post("/api/user/create").send(newUser);
 
     expect(response.body).toEqual({ message: "Created user" });
   });
 
-  it("POST /user/create sends error message if info missing", async () => {
+  it("POST /create sends error message if info missing", async () => {
     const newUser = {
       email: "new@email.com",
       password: "12345",
     };
 
-    const response = await request(app).post("/user/create").send(newUser);
+    const response = await request(app).post("/api/user/create").send(newUser);
 
     expect(response.body).toEqual({
       error: "One of the required information is missing",
