@@ -97,10 +97,8 @@ exports.createSuggestion = async (req, res, next) => {
 };
 
 exports.getAllSuggestions = async (req, res, next) => {
-
 	try {
 		const phaseId = Number(req.params.phaseId);
-
 		const allSuggestions = await client.suggestions.findMany({
 			where: {phaseId: phaseId}
 		})
@@ -112,7 +110,17 @@ exports.getAllSuggestions = async (req, res, next) => {
 }
 
 exports.getOneSuggestion = async (req, res, next) => {
-	
+	try {
+		const phaseId = Number(req.params.phaseId);
+		const suggestionId = Number(req.params.suggestionId);
+		const allSuggestions = await client.suggestions.findUnique({
+			where: {suggestionId: suggestionId}
+		})
+		res.status(200).json(allSuggestions)
+
+	} catch (err) {
+		next(err);
+	}	
 }
 
 exports.getRandomSuggestion = async (req, res, next) => {
