@@ -168,8 +168,11 @@ const loginUser = async (req, res, next) => {
     return;
   }
 
+  console.log("does it come here?", foundUser);
+
   // STEP 4, if user exists, send found user
-  return res.json(foundUser);
+  res.cookie("user", foundUser.email, { httpOnly: true });
+  res.json(foundUser);
 };
 
 module.exports = { resetPassword, forgotPassword, loginUser };
