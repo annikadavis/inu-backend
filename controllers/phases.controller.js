@@ -154,18 +154,15 @@ exports.updateSuggestion = async (req, res, next) => {
 
 exports.deleteSuggestion = async (req, res, next) => {
 	try {
-		const phaseId = Number(req.params.phaseId);
-		const { text } = req.body; 
+		const phaseIdDeleteFrom = Number(req.params.phaseId);
+		const suggestionId = Number(req.params.suggestionId);
 		const phaseSuggestion = await client.suggestions.findMany({
-			where:{ phaseId: phaseId}
+			where:{ phaseId: phaseIdDeleteFrom}
 		})
 		if (conbinationChecker(phaseSuggestion, suggestionId)) {
-			const updatedSuggestion = await client.suggestions.update({
-				data:{ 
-					text: text,
-					phase: { connect: { id: phaseIdAddTo } }
+			const updatedSuggestion = await client.suggestions.delete({
+				where: { id: suggestionId  }
 
-				}
 			})
 			res.status(200).json(updatedSuggestion)
 		} else  {
