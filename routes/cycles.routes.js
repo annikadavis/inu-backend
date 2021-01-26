@@ -1,17 +1,13 @@
 const { authMiddleware } = require("../middleware/auth.middleware");
 const router = require("express").Router();
 const {
-  // addPhase,
-  // deletePhase,
-  // getOnePhase,
-  getAllPhase,
-  // updatePhase,
-  createPhase,
-} = require("../controllers/phases.controller");
+  getAllCycles,
+  createCycle,
+} = require("../controllers/cycles.controller");
 
-router.post("/", createPhase);
+router.post("/", authMiddleware, createCycle);
 // router.put("/:phaseid", updatePhase);
-router.get("/", authMiddleware, getAllPhase);
+router.get("/", authMiddleware, getAllCycles);
 // router.get("/:phaseid", getOnePhase);
 // router.delete("/:phaseid", deletePhase);
 

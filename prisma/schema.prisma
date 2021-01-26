@@ -13,8 +13,7 @@ model Users {
   password     String
   created_date DateTime @default(now())
   updated_date DateTime @default(now()) @updatedAt
-  cycle   Cycle? @relation(fields: [cycleId], references: [id])
-  cycleId Int?
+  Cycle        Cycle[]
 }
 
 model Password_reset {
@@ -25,12 +24,12 @@ model Password_reset {
 
 model Cycle {
   id            Int      @id @default(autoincrement())
-  user_id       Int
   cycle_length  Int
   period_length Int
   createdAt     DateTime @default(now())
   updatedAt     DateTime
-  user          Users[]
+  user_id       Int?
+  user          Users?   @relation(fields: [user_id], references: [id])
 }
 
 model Quarter {

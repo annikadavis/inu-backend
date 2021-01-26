@@ -3,6 +3,7 @@ const validator = require("validator");
 
 const mail = require("@sendgrid/mail");
 const db = require("../config/db");
+const jwt = require("jsonwebtoken");
 
 // we set the API KEY here.
 // it's a free account from https://www.sendgrid.com/
@@ -152,9 +153,6 @@ const loginUser = async (req, res, next) => {
     },
     select: {
       id: true,
-      name: true,
-      email: true,
-      created_date: true,
     },
   });
 
@@ -169,10 +167,12 @@ const loginUser = async (req, res, next) => {
   }
 
   console.log("does it come here?", foundUser);
-
+  const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
   // STEP 4, if user exists, send found user
-  res.cookie("user", foundUser.email, { httpOnly: true });
-  res.json(foundUser);
+  res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
+  res.status(200).json({ token });
 };
 
 module.exports = { resetPassword, forgotPassword, loginUser };
