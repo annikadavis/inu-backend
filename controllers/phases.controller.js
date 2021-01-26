@@ -1,6 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const client = new PrismaClient();
 
+const conbinationChecker = (all, id) => {
+	const find = all.find(item => item.id === id);
+	return find ? true : false;
+}
+
 
 
 exports.createPhase = async (req, res, next) => {
@@ -76,13 +81,6 @@ exports.createSuggestion = async (req, res, next) => {
 		const phaseIdAddTo = Number(req.params.phaseId);
 		const { text } = req.body; 
 		const addedSuggestion = await client.suggestions.create({
-			// const newTrack = await client.track.create({
-			// 	data: {
-			// 	  title: title,
-			// 	  url: url,
-			// 	  Album: { connect: { id: albumId } },
-			// 	},
-			//   });
 			data:{ 
 				text: text,
 				phase: { connect: { id: phaseIdAddTo } }
@@ -113,10 +111,11 @@ exports.getOneSuggestion = async (req, res, next) => {
 	try {
 		const phaseId = Number(req.params.phaseId);
 		const suggestionId = Number(req.params.suggestionId);
-		const allSuggestions = await client.suggestions.findUnique({
-			where: {suggestionId: suggestionId}
+		const suggestionPhase = await client.suggestions.findMany({
+			where: {phaseId: phaseId}
 		})
-		res.status(200).json(allSuggestions)
+		oneSuggestions = suggestionPhase.find(item => item.id = suggestionId)
+		res.status(200).json(oneSuggestions)
 
 	} catch (err) {
 		next(err);
@@ -128,9 +127,52 @@ exports.getRandomSuggestion = async (req, res, next) => {
 }
 
 exports.updateSuggestion = async (req, res, next) => {
-	
+	try {
+		const phaseId = Number(req.params.phaseId);
+		const suggestionId = Number(req.params.suggestionId);
+		const { text } = req.body;
+
+		//probably shoul be a middleware, ask tomorrow
+		const phaseSuggestion = await client.suggestions.findMany({
+			where:{ phaseId: phaseId}
+		})
+		if (conbinationChecker(phaseSuggestion, suggestionId)) {
+			const updatedSuggestion = await client.suggestions.update({
+				where: { id: suggestionId },
+				data:{ 
+					text: text
+				}
+			})
+			res.status(200).json(updatedSuggestion)
+		} else  {
+			res.status(404).json({"message":"not found"})
+		}
+	} catch (err) {
+		next(err);
+	}	
 }
 
 exports.deleteSuggestion = async (req, res, next) => {
-	
+	try {
+		const phaseId = Number(req.params.phaseId);
+		const { text } = req.body; 
+		const phaseSuggestion = await client.suggestions.findMany({
+			where:{ phaseId: phaseId}
+		})
+		if (conbinationChecker(phaseSuggestion, suggestionId)) {
+			const updatedSuggestion = await client.suggestions.update({
+				data:{ 
+					text: text,
+					phase: { connect: { id: phaseIdAddTo } }
+
+				}
+			})
+			res.status(200).json(updatedSuggestion)
+		} else  {
+			res.status(404).json({"message":"not found"})
+		}
+
+	} catch (err) {
+		next(err);
+	}
 }

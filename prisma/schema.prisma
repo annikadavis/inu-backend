@@ -13,8 +13,8 @@ model Users {
   password     String
   created_date DateTime @default(now())
   updated_date DateTime @default(now()) @updatedAt
-  cycle   Cycle? @relation(fields: [cycleId], references: [id])
-  cycleId Int?
+  cycle        Cycle?   @relation(fields: [cycleId], references: [id])
+  cycleId      Int?
 }
 
 model Password_reset {
@@ -34,32 +34,23 @@ model Cycle {
   user          Users[]
 }
 
-model Quarter {
-  id      Int       @id @default(autoincrement())
-  title   String
-  therapy Therapy[]
-}
-
 model Therapy {
-  id          Int                 @id @default(autoincrement())
-  order_num   Int
-  title       String
-  sub_title   String
-  icon        String
-  audio       String
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @default(now()) @updatedAt
-  quarter     Quarter?            @relation(fields: [quarterId], references: [id])
-  quarterId   Int?
-  description Description_audio[]
+  id        Int      @id @default(autoincrement())
+  order     Int      @unique
+  title     String
+  sub_title String
+  audio     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  //description Description_audio[]
 }
 
-model Description_audio {
-  id        Int      @id @default(autoincrement())
-  text      String
-  therapy   Therapy? @relation(fields: [therapyId], references: [id])
-  therapyId Int?
-}
+// model Description_audio {
+//   id        Int      @id @default(autoincrement())
+//   text      String
+//   therapy   Therapy? @relation(fields: [therapyId], references: [id])
+//   therapyId Int?
+// }
 
 model Suggestions {
   id        Int      @id @default(autoincrement())
