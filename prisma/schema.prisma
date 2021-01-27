@@ -13,8 +13,8 @@ model Users {
   password     String
   created_date DateTime @default(now())
   updated_date DateTime @default(now()) @updatedAt
-  cycle   Cycle? @relation(fields: [cycleId], references: [id])
-  cycleId Int?
+  cycle        Cycle?   @relation(fields: [cycleId], references: [id])
+  cycleId      Int?
 }
 
 model Password_reset {
@@ -28,53 +28,46 @@ model Cycle {
   user_id       Int
   cycle_length  Int
   period_length Int
+  last_period   DateTime
   createdAt     DateTime @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @default(now()) @updatedAt
   user          Users[]
 }
 
-model Quarter {
-  id      Int       @id @default(autoincrement())
-  title   String
-  therapy Therapy[]
-}
-
 model Therapy {
-  id          Int                 @id @default(autoincrement())
-  order_num   Int
-  title       String
-  sub_title   String
-  icon        String
-  audio       String
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime
-  quarter     Quarter?            @relation(fields: [quarterId], references: [id])
-  quarterId   Int?
-  description Description_audio[]
-}
-
-model Description_audio {
   id        Int      @id @default(autoincrement())
-  text      String
-  therapy   Therapy? @relation(fields: [therapyId], references: [id])
-  therapyId Int?
+  order     Int      @unique
+  title     String
+  sub_title String
+  audio     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  //description Description_audio[]
 }
 
-model Suggestion {
+// model Description_audio {
+//   id        Int      @id @default(autoincrement())
+//   text      String
+//   therapy   Therapy? @relation(fields: [therapyId], references: [id])
+//   therapyId Int?
+// }
+
+model Suggestions {
   id        Int      @id @default(autoincrement())
   text      String
   createdAt DateTime @default(now())
-  updatedAt DateTime
-  Phases    Phases?  @relation(fields: [phasesId], references: [id])
-  phasesId  Int?
+  updatedAt DateTime @default(now()) @updatedAt
+  phase     Phases?  @relation(fields: [phaseId], references: [id])
+  phaseId   Int?
 }
 
 model Phases {
-  id         Int          @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   name       String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime
-  suggestion Suggestion[]
+  text       String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @default(now()) @updatedAt
+  suggestion Suggestions[]
 }
 
 // model User {
@@ -91,4 +84,5 @@ model Phases {
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["nativeTypes"]
 }
