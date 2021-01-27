@@ -4,6 +4,8 @@ const validator = require("validator");
 const mail = require("@sendgrid/mail");
 const db = require("../config/db");
 const jwt = require("jsonwebtoken");
+const bcrypt= require("bcryptjs");
+const { users } = require("../config/db");
 
 // we set the API KEY here.
 // it's a free account from https://www.sendgrid.com/
@@ -44,7 +46,6 @@ const resetPassword = async (req, res, next) => {
   // if it didn't return above, it means it exists.
   // the reason is: there is a return in that if statement so it would never come here.
   // STEP 4, if password reset request exists, update found user
-  console.log(foundPasswordReset.email);
   await db.users.update({
     where: { email: foundPasswordReset.email },
     data: {
@@ -137,9 +138,8 @@ const forgotPassword = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   // STEP 1, get email and password the user gives us from the body
   const { email, password } = req.body;
-
   if (!email || !password) {
-    const error = new Error("One of the required information is missing");
+    const error = new Error("One of the required information is wrong");
     error.status = 400;
     next(error);
     return;
@@ -148,25 +148,30 @@ const loginUser = async (req, res, next) => {
   // STEP 2, get a user with that combinations from database
   const foundUser = await db.users.findFirst({
     where: {
-      email: email,
-      password: password,
-    },
+      email: email
+     },
     select: {
       id: true,
+      email: true,
+      password: true
     },
   });
 
   // STEP 3, if user DOES NOT exist, send error
-  if (!foundUser) {
-    const error = new Error(
-      "No such user with the provided email and password combination in database"
-    );
-    error.status = 401;
-    next(error);
-    return;
-  }
+ const isPasswordCorrect = await bcrypt.compare(password, foundUser.password) 
+ 
+ if (!isPasswordCorrect) {
+  const error = new Error(
+    "No such user with the provided email and password combination in database"
+  );
+  error.status = 401;
+  next(error);
+  return;
+}
 
-  console.log("does it come here?", foundUser);
+
+
+
   const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
