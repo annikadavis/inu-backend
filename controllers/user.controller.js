@@ -1,5 +1,6 @@
 const validator = require("validator");
 const db = require("../config/db");
+const bcrypt = require('bcrypt');
 
 const createUser = async (req, res, next) => {
   const { name, email, password, repeatPassword } = req.body;
@@ -33,6 +34,12 @@ const createUser = async (req, res, next) => {
 
     return;
   }
+
+
+
+
+
+
 
   try {
     await db.users.create({
