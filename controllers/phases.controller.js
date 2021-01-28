@@ -1,9 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
+// const { random } = require("nanoid");
 const client = new PrismaClient();
 
 const conbinationChecker = (all, id) => {
   const find = all.find((item) => item.id === id);
-  return find ? true : false;
+  return find;
 };
 
 exports.createPhase = async (req, res, next) => {
@@ -107,7 +108,20 @@ exports.getOneSuggestion = async (req, res, next) => {
   }
 };
 
-exports.getRandomSuggestion = async (req, res, next) => {};
+exports.getRandomSuggestion = async (req, res, next) => {
+  try {
+    const phaseId = Number(req.params.phaseId);
+    const suggestionsOfPhase = await client.suggestions.findMany({
+      where: { phaseId: phaseId },
+    });
+    randomNum = Math.floor(
+      Math.random() * Math.floor(suggestionsOfPhase.length - 1)
+    );
+    res.status(200).json(suggestionsOfPhase[randomNum]);
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.updateSuggestion = async (req, res, next) => {
   try {

@@ -1,18 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const client = new PrismaClient();
 
-// router.post("/", createTherapy );
-// router.put("/:therapyId", updateTherapy);
-// router.get("/", getAllTherapies);
-// router.delete("/:therapyId", deleteTherapy);
-
-// id        Int      @id @default(autoincrement())
-//   order     Int      @unique
-//   title     String
-//   sub_title String
-//   icon      String
-//   audio     String
-
 exports.createTherapy = async (req, res, next) => {
 	try {
 		const {order, title, sub_title, audio } = req.body;
