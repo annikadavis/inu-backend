@@ -21,8 +21,8 @@ router.delete("/:phaseId", deletePhase);
 
 router.post("/:phaseId/suggestions", createSuggestion );
 router.get("/:phaseId/suggestions", getAllSuggestions );
-router.get("/:phaseId/suggestions/:suggestionId", getOneSuggestion);
 router.get("/:phaseId/suggestions/random", getRandomSuggestion);
+router.get("/:phaseId/suggestions/:suggestionId", getOneSuggestion);
 router.put("/:phaseId/suggestions/:suggestionId", updateSuggestion);
 router.delete("/:phaseId/suggestions/:suggestionId", deleteSuggestion);
 

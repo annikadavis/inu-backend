@@ -15,7 +15,7 @@ const createUser = async (req, res, next) => {
     return;
   }
   if (password != repeatPassword) {
-    const error = new Error("Passwords dont match!");
+    const error = new Error("Passwords don't match!");
     error.status = 400;
     next(error);
     return;
@@ -35,7 +35,7 @@ const createUser = async (req, res, next) => {
   }
 
   try {
-    await db.users.create({
+     const newUser = await db.users.create({
       data: {
         name,
         email,
@@ -46,8 +46,8 @@ const createUser = async (req, res, next) => {
     next(error);
     return;
   }
-
-  res.json({ message: "Created user" });
+  res.status(200).json(newUser);
+  //res.json({ message: "Created user" });
 };
 
 module.exports = { createUser };

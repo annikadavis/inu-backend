@@ -1,12 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
+// const { random } = require("nanoid");
 const client = new PrismaClient();
 
 const conbinationChecker = (all, id) => {
 	const find = all.find(item => item.id === id);
-	return find ? true : false;
+	return find;
 }
-
-
 
 exports.createPhase = async (req, res, next) => {
 	try {
@@ -69,13 +68,6 @@ exports.deletePhase = async (req, res, next) => {
 	}
 };
 
-// router.post("/:phaseId/suggestions/", createSuggestion );
-// router.get("/:phaseId/suggestions/", getAllSuggestions );
-// router.get("/:phaseId/suggestions/:suggestionId", getOneSuggestion);
-// router.get("/:phaseId/suggestions/random", getRandomSuggestion);
-// router.put("/:phaseId/suggestions/:suggestionId", updateSuggestion);
-// router.delete("/:phaseId/suggestions/:suggestionId", deleteSuggestion);
-
 exports.createSuggestion = async (req, res, next) => {
 	try {
 		const phaseIdAddTo = Number(req.params.phaseId);
@@ -123,6 +115,17 @@ exports.getOneSuggestion = async (req, res, next) => {
 }
 
 exports.getRandomSuggestion = async (req, res, next) => {
+	try {
+		const phaseId = Number(req.params.phaseId);
+		const suggestionsOfPhase = await client.suggestions.findMany({
+			where: {phaseId: phaseId}
+		})
+		randomNum = Math.floor(Math.random() * Math.floor(suggestionsOfPhase.length-1));
+		res.status(200).json(suggestionsOfPhase[randomNum])
+
+	} catch (err) {
+		next(err);
+	}
 	
 }
 
