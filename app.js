@@ -3,20 +3,18 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+app.use(cors());
+app.use(express.json());
 
-app.use(express.static('public'))
+app.use(express.static("public"));
 
-//const PORT = process.env.PORT || 8001;
 const mainRouter = require("./routes/");
 
 const errorHandling = require("./middleware/error-handling.middleware");
 
 // Automatically parses the body and makes it into a javascript object, if JSON.
-app.use(express.json());
 
 app.use("/api", mainRouter);
-
-app.use(cors());
 
 // welcome message
 app.get("/", (req, res) => {
