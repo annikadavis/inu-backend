@@ -8,5 +8,6 @@ router.use("/phases", phaseRouter);
 router.use("/therapy", therapyRouter);
 router.use("/user", userRouter);
 router.use("/auth", authRouter);
+//router.use("/cycles", cyclesRouter);
 
 module.exports = router;

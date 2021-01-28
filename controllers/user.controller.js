@@ -1,8 +1,11 @@
 const validator = require("validator");
 const db = require("../config/db");
+const bcrypt = require("bcrypt");
+const { users } = require("../config/db");
 
 const createUser = async (req, res, next) => {
   const { name, email, password, repeatPassword } = req.body;
+
   if (!name || !email || !password || !repeatPassword) {
     const error = new Error("One of the required information is missing");
     error.status = 400;
@@ -33,13 +36,14 @@ const createUser = async (req, res, next) => {
 
     return;
   }
+  const hashedPassword = await bcrypt.hash(password, 12);
 
   try {
     await db.users.create({
       data: {
         name,
         email,
-        password,
+        password: hashedPassword,
       },
     });
   } catch (error) {
