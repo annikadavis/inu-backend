@@ -1,8 +1,11 @@
- const { nanoid } = require("nanoid"); // generates random unique strings
+const { nanoid } = require("nanoid"); // generates random unique strings
 const validator = require("validator");
 
 const mail = require("@sendgrid/mail");
 const db = require("../config/db");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const { users } = require("../config/db");
 
 // we set the API KEY here.
 // it's a free account from https://www.sendgrid.com/
@@ -89,7 +92,12 @@ const forgotPassword = async (req, res, next) => {
     const resetToken = nanoid();
     try {
       // STEP 4.A - DELETE THE EXISTING REQUEST! So that we can send a new one.
-      await db.users.delete({ where: { email: email } });
+      const existingResetReq = await db.password_reset.findFirst({
+        where: { email: email },
+      });
+      if (existingResetReq) {
+        await db.password_reset.delete({ where: { email: email } });
+      }
 
       // STEP 4.B insert token and related email into the new table to keep track.
       await db.password_reset.create({
@@ -130,9 +138,8 @@ const forgotPassword = async (req, res, next) => {
 const loginUser = async (req, res, next) => {
   // STEP 1, get email and password the user gives us from the body
   const { email, password } = req.body;
-
   if (!email || !password) {
-    const error = new Error("One of the required information is missing");
+    const error = new Error("One of the required information is wrong");
     error.status = 400;
     next(error);
     return;
@@ -142,18 +149,18 @@ const loginUser = async (req, res, next) => {
   const foundUser = await db.users.findFirst({
     where: {
       email: email,
-      password: password,
     },
     select: {
       id: true,
-      name: true,
       email: true,
-      created_date: true,
+      password: true,
     },
   });
 
   // STEP 3, if user DOES NOT exist, send error
-  if (!foundUser) {
+  const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
+
+  if (!isPasswordCorrect) {
     const error = new Error(
       "No such user with the provided email and password combination in database"
     );
@@ -162,8 +169,12 @@ const loginUser = async (req, res, next) => {
     return;
   }
 
+  const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
   // STEP 4, if user exists, send found user
-  return res.json(foundUser);
+  res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
+  res.status(200).json({ token });
 };
 
 module.exports = { resetPassword, forgotPassword, loginUser };

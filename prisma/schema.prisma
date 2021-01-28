@@ -24,13 +24,13 @@ model Password_reset {
 
 model Cycle {
   id            Int      @id @default(autoincrement())
-  user_id       Int
   cycle_length  Int
   period_length Int?
   last_period   DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now()) @updatedAt
-  user          Users    @relation(fields: [user_id], references: [id])
+  user_id       Int?
+  user          Users?   @relation(fields: [user_id], references: [id])
 }
 
 model Therapy {
