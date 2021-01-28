@@ -4,7 +4,7 @@ const validator = require("validator");
 const mail = require("@sendgrid/mail");
 const db = require("../config/db");
 const jwt = require("jsonwebtoken");
-const bcrypt= require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const { users } = require("../config/db");
 
 // we set the API KEY here.
@@ -148,29 +148,26 @@ const loginUser = async (req, res, next) => {
   // STEP 2, get a user with that combinations from database
   const foundUser = await db.users.findFirst({
     where: {
-      email: email
-     },
+      email: email,
+    },
     select: {
       id: true,
       email: true,
-      password: true
+      password: true,
     },
   });
 
   // STEP 3, if user DOES NOT exist, send error
- const isPasswordCorrect = await bcrypt.compare(password, foundUser.password) 
- 
- if (!isPasswordCorrect) {
-  const error = new Error(
-    "No such user with the provided email and password combination in database"
-  );
-  error.status = 401;
-  next(error);
-  return;
-}
+  const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
 
-
-
+  if (!isPasswordCorrect) {
+    const error = new Error(
+      "No such user with the provided email and password combination in database"
+    );
+    error.status = 401;
+    next(error);
+    return;
+  }
 
   const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, {
     expiresIn: "1h",

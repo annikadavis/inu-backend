@@ -19,7 +19,11 @@ describe("test user routes", () => {
     };
 
     const response = await request(app).post("/api/user/create").send(newUser);
+<<<<<<< HEAD
    
+=======
+
+>>>>>>> 96dc0a0781b13b9db9b8cb22348a25e7bc216fff
     expect(response.body).toEqual({ message: "Created user" });
   });
 

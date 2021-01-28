@@ -53,4 +53,5 @@ const createUser = async (req, res, next) => {
 
   res.json({ message: "Created user" });
 };
+
 module.exports = { createUser };
