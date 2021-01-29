@@ -23,6 +23,8 @@ exports.createCycle = async (req, res, next) => {
         cycle_length: cycle_length,
         period_length: period_length,
         last_period: last_period,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         user: { connect: { id: user_id } },
       },
     });
@@ -32,6 +34,7 @@ exports.createCycle = async (req, res, next) => {
     next(err);
   }
 };
+
 exports.updateCycle = async (req, res, next) => {
   try {
     const { cycle_length, period_length, last_period } = req.body;
@@ -46,6 +49,7 @@ exports.updateCycle = async (req, res, next) => {
             cycle_length: cycle_length,
             period_length: period_length,
             last_period: last_period,
+            updatedAt: new Date().toISOString(),
           },
         },
       },
@@ -56,6 +60,7 @@ exports.updateCycle = async (req, res, next) => {
     next(err);
   }
 };
+
 exports.getCycle = async (req, res, next) => {
   try {
     const user_id = req.userId;

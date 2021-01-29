@@ -39,19 +39,37 @@ const createUser = async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, 12);
 
   try {
-     const newUser = await db.users.create({
+    const newUser = await db.users.create({
       data: {
         name,
         email,
         password: hashedPassword,
       },
     });
+
+    // the cycle is created with the user and changed after the user enters data
+
+    const newCycle = await db.cycle.create({
+      data: {
+        cycle_length: 28,
+        period_length: 5,
+        last_period: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: { connect: { id: newUser.id } },
+      },
+    });
   } catch (error) {
     next(error);
     return;
   }
-  res.status(200).json(newUser);
+  res.status(200).json({ user: newUser.id, message: "Created user" });
   //res.json({ message: "Created user" });
 };
 
-module.exports = { createUser };
+const getAllUsers = async (req, res, next) => {
+  const allUsers = await db.users.findMany();
+  res.status(200).json(allUsers);
+};
+
+module.exports = { createUser, getAllUsers };

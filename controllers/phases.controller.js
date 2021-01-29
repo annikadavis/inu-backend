@@ -34,6 +34,7 @@ exports.getOnePhase = async (req, res, next) => {
     const onePhase = await client.phases.findUnique({
       where: { id: phaseId },
     });
+    console.log(onePhase);
     res.status(200).json(onePhase);
   } catch (err) {
     next(err);
