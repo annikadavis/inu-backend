@@ -46,10 +46,11 @@ const resetPassword = async (req, res, next) => {
   // if it didn't return above, it means it exists.
   // the reason is: there is a return in that if statement so it would never come here.
   // STEP 4, if password reset request exists, update found user
+  const hashedNewPassword = await bcrypt.hash(newPassword, 12);
   await db.users.update({
     where: { email: foundPasswordReset.email },
     data: {
-      password: newPassword,
+      password: hashedNewPassword,
     },
   });
 
@@ -86,6 +87,8 @@ const forgotPassword = async (req, res, next) => {
     },
   });
 
+  console.log(foundUser);
+
   // STEP 4. if email exists in db, send a password reset link.
   if (foundUser) {
     // nanoid npm package generates random ids that are not easily guessable. https://www.npmjs.com/package/nanoid
@@ -121,6 +124,7 @@ const forgotPassword = async (req, res, next) => {
 
       // STEP 4.E  send email using sendgrid.
       await mail.send(message);
+      console.log("mail sent?");
     } catch (error) {
       next(error);
       return;

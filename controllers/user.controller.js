@@ -39,18 +39,18 @@ const createUser = async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, 12);
 
   try {
-     const newUser = await db.users.create({
+    const newUser = await db.users.create({
       data: {
         name,
         email,
         password: hashedPassword,
       },
     });
+    res.status(200).json(newUser);
   } catch (error) {
     next(error);
     return;
   }
-  res.status(200).json(newUser);
   //res.json({ message: "Created user" });
 };
 
