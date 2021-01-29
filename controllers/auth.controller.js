@@ -162,6 +162,16 @@ const loginUser = async (req, res, next) => {
   });
 
   // STEP 3, if user DOES NOT exist, send error
+
+  if (!foundUser) {
+    const error = new Error(
+      "No such user with the provided email and password combination in database"
+    );
+    error.status = 401;
+    next(error);
+    return;
+  }
+
   const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
 
   if (!isPasswordCorrect) {
