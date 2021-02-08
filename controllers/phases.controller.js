@@ -9,6 +9,8 @@ const conbinationChecker = (all, id) => {
 
 exports.createPhase = async (req, res, next) => {
   try {
+    const path = req.file.path;
+    console.log(path);
     const name = req.body.name;
     const createdPhase = await client.phases.create({
       data: { name: name, updatedAt: new Date().toISOString() },
