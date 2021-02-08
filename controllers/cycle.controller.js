@@ -1,16 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const client = new PrismaClient();
 
-// router.post("/userId", createCycle);
-// router.put("/:userId", updateCycle);
-// router.get("/userId", getCycle);
-
-// id            Int      @id @default(autoincrement())
-//   user_id       Int
-//   cycle_length  Int
-//   period_length Int?
-//   last_period   DateTime
-
 exports.createCycle = async (req, res, next) => {
   try {
     const { cycle_length, period_length, last_period } = req.body;
@@ -23,6 +13,8 @@ exports.createCycle = async (req, res, next) => {
         cycle_length: cycle_length,
         period_length: period_length,
         last_period: last_period,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         user: { connect: { id: user_id } },
       },
     });
@@ -32,10 +24,12 @@ exports.createCycle = async (req, res, next) => {
     next(err);
   }
 };
+
 exports.updateCycle = async (req, res, next) => {
   try {
     const { cycle_length, period_length, last_period } = req.body;
     const user_id = req.userId;
+    console.log(user_id);
     //const user_id = Number(req.params.userId);
     const updatedCycle = await client.users.update({
       // user_id: user_id,
@@ -46,6 +40,7 @@ exports.updateCycle = async (req, res, next) => {
             cycle_length: cycle_length,
             period_length: period_length,
             last_period: last_period,
+            updatedAt: new Date().toISOString(),
           },
         },
       },
@@ -56,6 +51,7 @@ exports.updateCycle = async (req, res, next) => {
     next(err);
   }
 };
+
 exports.getCycle = async (req, res, next) => {
   try {
     const user_id = req.userId;
