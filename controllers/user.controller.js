@@ -8,7 +8,7 @@ const createUser = async (req, res, next) => {
 
   if (foundUser) {
     const error = new Error(
-      `User with email address: ${email} already exists. We are redirecting you to login`
+      `User with this email address ${email} already exists.`
     );
     error.status = 409;
     next(error);

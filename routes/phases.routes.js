@@ -11,7 +11,7 @@ const {
 
 router.post("/", createPhase);
 // router.put("/:phaseid", updatePhase);
-router.get("/", authMiddleware, getAllPhase);
+router.get("/", getAllPhase);
 // router.get("/:phaseid", getOnePhase);
 // router.delete("/:phaseid", deletePhase);
 

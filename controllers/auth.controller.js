@@ -68,13 +68,13 @@ const forgotPassword = async (req, res, next) => {
   const { name } = req.body;
   // STEP 2. required info check
   if (!email || !name) {
-    const error = new Error("One of the required information is missing");
+    const error = new Error("Please fill in all fields");
     error.status = 400;
     next(error);
     return;
   }
   if (!validator.isEmail(email)) {
-    const error = new Error("Please Enter correct email address");
+    const error = new Error("Please enter valid email address");
     error.status = 400;
     next(error);
     return;
@@ -135,7 +135,7 @@ const forgotPassword = async (req, res, next) => {
   // because we don't want hackers to know which emails are available in our database
   res.status(200).json({
     message:
-      "We have sent an email with the forgot password link if you are registered!",
+      "An email with the reset password link has been sent to the adress",
   });
 };
 
@@ -143,14 +143,14 @@ const loginUser = async (req, res, next) => {
   // STEP 1, get email and password the user gives us from the body
   const { email, password } = req.body;
   if (!email || !password) {
-    const error = new Error("One of the required information is wrong");
+    const error = new Error("Please fill in all fields");
     error.status = 400;
     next(error);
     return;
   }
 
   // STEP 2, get a user with that combinations from database
-  const foundUser = await db.users.findFirst({
+  const foundUser = await db.users.findUnique({
     where: {
       email: email,
     },
@@ -164,9 +164,7 @@ const loginUser = async (req, res, next) => {
   // STEP 3, if user DOES NOT exist, send error
 
   if (!foundUser) {
-    const error = new Error(
-      "No such user with the provided email and password combination in database"
-    );
+    const error = new Error("Email or password is incorrect");
     error.status = 401;
     next(error);
     return;
@@ -175,16 +173,14 @@ const loginUser = async (req, res, next) => {
   const isPasswordCorrect = await bcrypt.compare(password, foundUser.password);
 
   if (!isPasswordCorrect) {
-    const error = new Error(
-      "No such user with the provided email and password combination in database"
-    );
+    const error = new Error("Email or password is incorrect");
     error.status = 401;
     next(error);
     return;
   }
 
   const token = jwt.sign({ id: foundUser.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "3h",
   });
   // STEP 4, if user exists, send found user
   res.cookie("token", token, { httpOnly: true, maxAge: 3600000 });
