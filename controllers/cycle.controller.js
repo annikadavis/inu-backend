@@ -46,7 +46,7 @@ exports.updateCycle = async (req, res, next) => {
       },
       include: { cycle: true },
     });
-    res.status(200).json(updatedCycle);
+    res.status(200).json({ cycle: updatedCycle.cycle, id: updatedCycle.id });
   } catch (err) {
     next(err);
   }
@@ -59,7 +59,9 @@ exports.getCycle = async (req, res, next) => {
       where: { id: user_id },
       include: { cycle: true },
     });
-    res.status(200).json(userCycle);
+
+    //console.log(userCycle);
+    res.status(200).json({ id: userCycle.id, cycle: userCycle.cycle });
   } catch (err) {
     next(err);
   }

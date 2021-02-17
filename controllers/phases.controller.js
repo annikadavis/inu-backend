@@ -9,8 +9,6 @@ const conbinationChecker = (all, id) => {
 
 exports.createPhase = async (req, res, next) => {
   try {
-    const path = req.file.path;
-    console.log(path);
     const name = req.body.name;
     const createdPhase = await client.phases.create({
       data: { name: name, updatedAt: new Date().toISOString() },
@@ -116,10 +114,12 @@ exports.getRandomSuggestion = async (req, res, next) => {
     const phaseId = Number(req.params.phaseId);
     const suggestionsOfPhase = await client.suggestions.findMany({
       where: { phaseId: phaseId },
+      include: { phase: true },
     });
     randomNum = Math.floor(
       Math.random() * Math.floor(suggestionsOfPhase.length - 1)
     );
+    //console.log(suggestionsOfPhase);
     res.status(200).json(suggestionsOfPhase[randomNum]);
   } catch (err) {
     next(err);
